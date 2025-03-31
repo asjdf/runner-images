@@ -1,189 +1,264 @@
-locals {
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${var.image_version}"
-}
+# locals {
+#   managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${var.image_version}"
+# }
 
-variable "agent_tools_directory" {
+# variable "agent_tools_directory" {
+#   type    = string
+#   default = "C:\\hostedtoolcache\\windows"
+# }
+
+# variable "allowed_inbound_ip_addresses" {
+#   type    = list(string)
+#   default = []
+# }
+
+# variable "azure_tags" {
+#   type    = map(string)
+#   default = {}
+# }
+
+# variable "build_resource_group_name" {
+#   type    = string
+#   default = "${env("BUILD_RESOURCE_GROUP_NAME")}"
+# }
+
+# variable "client_cert_path" {
+#   type    = string
+#   default = "${env("ARM_CLIENT_CERT_PATH")}"
+# }
+
+# variable "client_id" {
+#   type    = string
+#   default = "${env("ARM_CLIENT_ID")}"
+# }
+
+# variable "client_secret" {
+#   type      = string
+#   default   = "${env("ARM_CLIENT_SECRET")}"
+#   sensitive = true
+# }
+
+# variable "helper_script_folder" {
+#   type    = string
+#   default = "C:\\Program Files\\WindowsPowerShell\\Modules\\"
+# }
+
+# variable "image_folder" {
+#   type    = string
+#   default = "C:\\image"
+# }
+
+# variable "image_os" {
+#   type    = string
+#   default = "win22"
+# }
+
+# variable "image_version" {
+#   type    = string
+#   default = "dev"
+# }
+
+# variable "imagedata_file" {
+#   type    = string
+#   default = "C:\\imagedata.json"
+# }
+
+# variable "temp_dir" {
+#   type    = string
+#   default = "D:\\temp"
+# }
+
+# variable "install_password" {
+#   type      = string
+#   default   = ""
+#   sensitive = true
+# }
+
+# variable "install_user" {
+#   type    = string
+#   default = "installer"
+# }
+
+# variable "location" {
+#   type    = string
+#   default = "${env("ARM_RESOURCE_LOCATION")}"
+# }
+
+# variable "managed_image_name" {
+#   type    = string
+#   default = ""
+# }
+
+# variable "managed_image_resource_group_name" {
+#   type    = string
+#   default = "${env("ARM_RESOURCE_GROUP")}"
+# }
+
+# variable "managed_image_storage_account_type" {
+#   type    = string
+#   default = "Premium_LRS"
+# }
+
+# variable "object_id" {
+#   type    = string
+#   default = "${env("ARM_OBJECT_ID")}"
+# }
+
+# variable "private_virtual_network_with_public_ip" {
+#   type    = bool
+#   default = false
+# }
+
+# variable "subscription_id" {
+#   type    = string
+#   default = "${env("ARM_SUBSCRIPTION_ID")}"
+# }
+
+# variable "temp_resource_group_name" {
+#   type    = string
+#   default = "${env("TEMP_RESOURCE_GROUP_NAME")}"
+# }
+
+# variable "tenant_id" {
+#   type    = string
+#   default = "${env("ARM_TENANT_ID")}"
+# }
+
+# variable "virtual_network_name" {
+#   type    = string
+#   default = "${env("VNET_NAME")}"
+# }
+
+# variable "virtual_network_resource_group_name" {
+#   type    = string
+#   default = "${env("VNET_RESOURCE_GROUP")}"
+# }
+
+# variable "virtual_network_subnet_name" {
+#   type    = string
+#   default = "${env("VNET_SUBNET")}"
+# }
+
+# variable "vm_size" {
+#   type    = string
+#   default = "Standard_F8s_v2"
+# }
+
+# source "azure-arm" "image" {
+#   allowed_inbound_ip_addresses           = "${var.allowed_inbound_ip_addresses}"
+#   build_resource_group_name              = "${var.build_resource_group_name}"
+#   client_cert_path                       = "${var.client_cert_path}"
+#   client_id                              = "${var.client_id}"
+#   client_secret                          = "${var.client_secret}"
+#   communicator                           = "winrm"
+#   image_offer                            = "WindowsServer"
+#   image_publisher                        = "MicrosoftWindowsServer"
+#   image_sku                              = "2022-Datacenter"
+#   location                               = "${var.location}"
+#   managed_image_name                     = "${local.managed_image_name}"
+#   managed_image_resource_group_name      = "${var.managed_image_resource_group_name}"
+#   managed_image_storage_account_type     = "${var.managed_image_storage_account_type}"
+#   object_id                              = "${var.object_id}"
+#   os_disk_size_gb                        = "256"
+#   os_type                                = "Windows"
+#   private_virtual_network_with_public_ip = "${var.private_virtual_network_with_public_ip}"
+#   subscription_id                        = "${var.subscription_id}"
+#   temp_resource_group_name               = "${var.temp_resource_group_name}"
+#   tenant_id                              = "${var.tenant_id}"
+#   virtual_network_name                   = "${var.virtual_network_name}"
+#   virtual_network_resource_group_name    = "${var.virtual_network_resource_group_name}"
+#   virtual_network_subnet_name            = "${var.virtual_network_subnet_name}"
+#   vm_size                                = "${var.vm_size}"
+#   winrm_insecure                         = "true"
+#   winrm_use_ssl                          = "true"
+#   winrm_username                         = "packer"
+
+#   dynamic "azure_tag" {
+#     for_each = var.azure_tags
+#     content {
+#       name  = azure_tag.key
+#       value = azure_tag.value
+#     }
+#   }
+# }
+
+variable "accelerator" {
   type    = string
-  default = "C:\\hostedtoolcache\\windows"
+  default = "kvm"
 }
 
-variable "allowed_inbound_ip_addresses" {
-  type    = list(string)
-  default = []
-}
-
-variable "azure_tags" {
-  type    = map(string)
-  default = {}
-}
-
-variable "build_resource_group_name" {
+variable "autounattend" {
   type    = string
-  default = "${env("BUILD_RESOURCE_GROUP_NAME")}"
+  default = "./answer-files/2022-standard/Autounattend.xml"
 }
 
-variable "client_cert_path" {
+variable "cpus" {
   type    = string
-  default = "${env("ARM_CLIENT_CERT_PATH")}"
+  default = "4"
 }
 
-variable "client_id" {
+variable "disk_size" {
   type    = string
-  default = "${env("ARM_CLIENT_ID")}"
+  default = "61440"
 }
 
-variable "client_secret" {
-  type      = string
-  default   = "${env("ARM_CLIENT_SECRET")}"
-  sensitive = true
-}
-
-variable "helper_script_folder" {
+variable "headless" {
   type    = string
-  default = "C:\\Program Files\\WindowsPowerShell\\Modules\\"
+  default = "true"
 }
 
-variable "image_folder" {
+variable "iso_checksum" {
   type    = string
-  default = "C:\\image"
+  default = "sha256:3e4fa6d8507b554856fc9ca6079cc402df11a8b79344871669f0251535255325"
 }
 
-variable "image_os" {
+variable "iso_url" {
   type    = string
-  default = "win22"
+  default = "https://software-static.download.prss.microsoft.com/sg/download/888969d5-f34g-4e03-ac9d-1f9786c66749/SERVER_EVAL_x64FRE_en-us.iso"
 }
 
-variable "image_version" {
+variable "memory_size" {
   type    = string
-  default = "dev"
+  default = "4096"
 }
 
-variable "imagedata_file" {
+variable "shutdown_command" {
   type    = string
-  default = "C:\\imagedata.json"
+  default = "%WINDIR%/system32/sysprep/sysprep.exe /generalize /oobe /shutdown /unattend:C:/Windows/Temp/Autounattend.xml"
 }
 
-variable "temp_dir" {
+variable "vm_name" {
   type    = string
-  default = "D:\\temp"
+  default = "windows_2022"
 }
 
-variable "install_password" {
-  type      = string
-  default   = ""
-  sensitive = true
-}
-
-variable "install_user" {
-  type    = string
-  default = "installer"
-}
-
-variable "location" {
-  type    = string
-  default = "${env("ARM_RESOURCE_LOCATION")}"
-}
-
-variable "managed_image_name" {
-  type    = string
-  default = ""
-}
-
-variable "managed_image_resource_group_name" {
-  type    = string
-  default = "${env("ARM_RESOURCE_GROUP")}"
-}
-
-variable "managed_image_storage_account_type" {
-  type    = string
-  default = "Premium_LRS"
-}
-
-variable "object_id" {
-  type    = string
-  default = "${env("ARM_OBJECT_ID")}"
-}
-
-variable "private_virtual_network_with_public_ip" {
-  type    = bool
-  default = false
-}
-
-variable "subscription_id" {
-  type    = string
-  default = "${env("ARM_SUBSCRIPTION_ID")}"
-}
-
-variable "temp_resource_group_name" {
-  type    = string
-  default = "${env("TEMP_RESOURCE_GROUP_NAME")}"
-}
-
-variable "tenant_id" {
-  type    = string
-  default = "${env("ARM_TENANT_ID")}"
-}
-
-variable "virtual_network_name" {
-  type    = string
-  default = "${env("VNET_NAME")}"
-}
-
-variable "virtual_network_resource_group_name" {
-  type    = string
-  default = "${env("VNET_RESOURCE_GROUP")}"
-}
-
-variable "virtual_network_subnet_name" {
-  type    = string
-  default = "${env("VNET_SUBNET")}"
-}
-
-variable "vm_size" {
-  type    = string
-  default = "Standard_F8s_v2"
-}
-
-source "azure-arm" "image" {
-  allowed_inbound_ip_addresses           = "${var.allowed_inbound_ip_addresses}"
-  build_resource_group_name              = "${var.build_resource_group_name}"
-  client_cert_path                       = "${var.client_cert_path}"
-  client_id                              = "${var.client_id}"
-  client_secret                          = "${var.client_secret}"
-  communicator                           = "winrm"
-  image_offer                            = "WindowsServer"
-  image_publisher                        = "MicrosoftWindowsServer"
-  image_sku                              = "2022-Datacenter"
-  location                               = "${var.location}"
-  managed_image_name                     = "${local.managed_image_name}"
-  managed_image_resource_group_name      = "${var.managed_image_resource_group_name}"
-  managed_image_storage_account_type     = "${var.managed_image_storage_account_type}"
-  object_id                              = "${var.object_id}"
-  os_disk_size_gb                        = "256"
-  os_type                                = "Windows"
-  private_virtual_network_with_public_ip = "${var.private_virtual_network_with_public_ip}"
-  subscription_id                        = "${var.subscription_id}"
-  temp_resource_group_name               = "${var.temp_resource_group_name}"
-  tenant_id                              = "${var.tenant_id}"
-  virtual_network_name                   = "${var.virtual_network_name}"
-  virtual_network_resource_group_name    = "${var.virtual_network_resource_group_name}"
-  virtual_network_subnet_name            = "${var.virtual_network_subnet_name}"
-  vm_size                                = "${var.vm_size}"
-  winrm_insecure                         = "true"
-  winrm_use_ssl                          = "true"
-  winrm_username                         = "packer"
-
-  dynamic "azure_tag" {
-    for_each = var.azure_tags
-    content {
-      name  = azure_tag.key
-      value = azure_tag.value
-    }
-  }
+source "qemu" "win2022" {
+  accelerator      = "${var.accelerator}"
+  boot_wait        = "20s"
+  communicator     = "winrm"
+  cpus             = "${var.cpus}"
+  disk_compression = "true"
+  disk_interface   = "virtio"
+  disk_size        = "${var.disk_size}"
+  format           = "qcow2"
+  headless         = "${var.headless}"
+  iso_checksum     = "${var.iso_checksum}"
+  iso_url          = "${var.iso_url}"
+  memory           = "${var.memory_size}"
+  net_device       = "virtio-net"
+  qemuargs         = [["-vga", "qxl"]]
+  shutdown_command = "${var.shutdown_command}"
+  winrm_insecure   = "true"
+  winrm_password   = "vagrant"
+  winrm_timeout    = "30m"
+  winrm_use_ssl    = "true"
+  winrm_username   = "vagrant"
+  output_directory = "output-${var.vm_name}"
 }
 
 build {
-  sources = ["source.azure-arm.image"]
+  sources = ["source.qemu.win2022"]
+  # sources = ["source.azure-arm.image"]
 
   provisioner "powershell" {
     inline = [
