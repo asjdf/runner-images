@@ -2,10 +2,10 @@
 #   managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${var.image_version}"
 # }
 
-# variable "agent_tools_directory" {
-#   type    = string
-#   default = "C:\\hostedtoolcache\\windows"
-# }
+variable "agent_tools_directory" {
+  type    = string
+  default = "C:\\hostedtoolcache\\windows"
+}
 
 # variable "allowed_inbound_ip_addresses" {
 #   type    = list(string)
@@ -38,46 +38,46 @@
 #   sensitive = true
 # }
 
-# variable "helper_script_folder" {
-#   type    = string
-#   default = "C:\\Program Files\\WindowsPowerShell\\Modules\\"
-# }
+variable "helper_script_folder" {
+  type    = string
+  default = "C:\\Program Files\\WindowsPowerShell\\Modules\\"
+}
 
-# variable "image_folder" {
-#   type    = string
-#   default = "C:\\image"
-# }
+variable "image_folder" {
+  type    = string
+  default = "C:\\image"
+}
 
-# variable "image_os" {
-#   type    = string
-#   default = "win22"
-# }
+variable "image_os" {
+  type    = string
+  default = "win22"
+}
 
-# variable "image_version" {
-#   type    = string
-#   default = "dev"
-# }
+variable "image_version" {
+  type    = string
+  default = "dev"
+}
 
-# variable "imagedata_file" {
-#   type    = string
-#   default = "C:\\imagedata.json"
-# }
+variable "imagedata_file" {
+  type    = string
+  default = "C:\\imagedata.json"
+}
 
-# variable "temp_dir" {
-#   type    = string
-#   default = "D:\\temp"
-# }
+variable "temp_dir" {
+  type    = string
+  default = "D:\\temp"
+}
 
-# variable "install_password" {
-#   type      = string
-#   default   = ""
-#   sensitive = true
-# }
+variable "install_password" {
+  type      = string
+  default   = ""
+  sensitive = true
+}
 
-# variable "install_user" {
-#   type    = string
-#   default = "installer"
-# }
+variable "install_user" {
+  type    = string
+  default = "installer"
+}
 
 # variable "location" {
 #   type    = string
