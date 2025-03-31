@@ -240,7 +240,7 @@ source "qemu" "win2022" {
   disk_compression = "true"
   disk_interface   = "virtio"
   disk_size        = "${var.disk_size}"
-  floppy_files     = ["./answer_files/2022-standard/autounattend.xml"]
+  floppy_files     = ["./answer-files/2022-standard/autounattend.xml"]
   format           = "qcow2"
   headless         = "${var.headless}"
   iso_checksum     = "${var.iso_checksum}"
