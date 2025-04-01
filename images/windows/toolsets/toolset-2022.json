@@ -3,7 +3,7 @@
         {
             "name": "Ruby",
             "arch": "x64",
-            "platform" : "win32",
+            "platform": "win32",
             "versions": [
                 "3.0",
                 "3.1",
@@ -14,9 +14,9 @@
         },
         {
             "name": "Python",
-            "url" : "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
+            "url": "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
             "arch": "x64",
-            "platform" : "win32",
+            "platform": "win32",
             "versions": [
                 "3.8.*",
                 "3.9.*",
@@ -29,9 +29,9 @@
         },
         {
             "name": "Python",
-            "url" : "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
+            "url": "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
             "arch": "x86",
-            "platform" : "win32",
+            "platform": "win32",
             "versions": [
                 "3.8.*",
                 "3.9.*",
@@ -44,7 +44,7 @@
         {
             "name": "PyPy",
             "arch": "x86",
-            "platform" : "win64",
+            "platform": "win64",
             "versions": [
                 "2.7",
                 "3.7",
@@ -55,9 +55,9 @@
         },
         {
             "name": "node",
-            "url" : "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
+            "url": "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
             "arch": "x64",
-            "platform" : "win32",
+            "platform": "win32",
             "versions": [
                 "16.*",
                 "18.*",
@@ -67,9 +67,9 @@
         },
         {
             "name": "go",
-            "url" : "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
+            "url": "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
             "arch": "x64",
-            "platform" : "win32",
+            "platform": "win32",
             "versions": [
                 "1.20.*",
                 "1.21.*",
@@ -80,16 +80,36 @@
         }
     ],
     "powershellModules": [
-        { "name": "DockerMsftProvider" },
-        { "name": "MarkdownPS" },
-        { "name": "Pester" },
-        { "name": "PowerShellGet" },
-        { "name": "PSScriptAnalyzer" },
-        { "name": "PSWindowsUpdate" },
-        { "name": "SqlServer" },
-        { "name": "VSSetup" },
-        { "name": "Microsoft.Graph" },
-        {"name": "AWSPowershell"}
+        {
+            "name": "DockerMsftProvider"
+        },
+        {
+            "name": "MarkdownPS"
+        },
+        {
+            "name": "Pester"
+        },
+        {
+            "name": "PowerShellGet"
+        },
+        {
+            "name": "PSScriptAnalyzer"
+        },
+        {
+            "name": "PSWindowsUpdate"
+        },
+        {
+            "name": "SqlServer"
+        },
+        {
+            "name": "VSSetup"
+        },
+        {
+            "name": "Microsoft.Graph"
+        },
+        {
+            "name": "AWSPowershell"
+        }
     ],
     "azureModules": [
         {
@@ -97,14 +117,17 @@
             "versions": [
                 "12.4.0"
             ],
-            "zip_versions": [
-
-            ]
+            "zip_versions": []
         }
     ],
     "java": {
         "default": "8",
-        "versions": [ "8", "11", "17", "21"]
+        "versions": [
+            "8",
+            "11",
+            "17",
+            "21"
+        ]
     },
     "android": {
         "commandline_tools_url": "https://dl.google.com/android/repository/commandlinetools-win-9123335_latest.zip",
@@ -125,7 +148,9 @@
         "ndk": {
             "default": "27",
             "versions": [
-                "26", "27", "28"
+                "26",
+                "27",
+                "28"
             ]
         }
     },
@@ -144,21 +169,37 @@
         "mingw": []
     },
     "windowsFeatures": [
-        { "name": "Containers" },
-        { "name": "Microsoft-Windows-Subsystem-Linux", "optionalFeature": true },
-        { "name": "VirtualMachinePlatform", "optionalFeature": true },
-        { "name": "NET-Framework-45-Features", "includeAllSubFeatures": true },
-        { "name": "Client-ProjFS", "optionalFeature": true },
-        { "name": "NET-Framework-Features", "includeAllSubFeatures": true },
-        { "name": "Hyper-V", "includeAllSubFeatures": true },
-        { "name": "HypervisorPlatform", "optionalFeature": true },
-        { "name": "Hyper-V-PowerShell" },
-        { "name": "Wireless-Networking" }
+        {
+            "name": "Containers"
+        },
+        {
+            "name": "Microsoft-Windows-Subsystem-Linux",
+            "optionalFeature": true
+        },
+        {
+            "name": "VirtualMachinePlatform",
+            "optionalFeature": true
+        },
+        {
+            "name": "NET-Framework-45-Features",
+            "includeAllSubFeatures": true
+        },
+        {
+            "name": "Client-ProjFS",
+            "optionalFeature": true
+        },
+        {
+            "name": "NET-Framework-Features",
+            "includeAllSubFeatures": true
+        },
+        {
+            "name": "Wireless-Networking"
+        }
     ],
     "visualStudio": {
-        "version" : "2022",
-        "subversion" : "17",
-        "edition" : "Enterprise",
+        "version": "2022",
+        "subversion": "17",
+        "edition": "Enterprise",
         "channel": "release",
         "installChannel": "658092423_1519083591",
         "signature": [
@@ -252,7 +293,6 @@
             "Component.Microsoft.Windows.DriverKit",
             "wasm.tools",
             "Microsoft.Component.MSBuild"
-            
         ],
         "vsix": [
             "SSIS.MicrosoftDataToolsIntegrationServices",
@@ -286,11 +326,26 @@
     },
     "npm": {
         "global_packages": [
-            { "name": "yarn", "test": "yarn --version" },
-            { "name": "newman", "test": "newman --version" },
-            { "name": "lerna", "test": "lerna --version" },
-            { "name": "gulp-cli", "test": "gulp --version" },
-            { "name": "grunt-cli", "test": "grunt --version" }
+            {
+                "name": "yarn",
+                "test": "yarn --version"
+            },
+            {
+                "name": "newman",
+                "test": "newman --version"
+            },
+            {
+                "name": "lerna",
+                "test": "lerna --version"
+            },
+            {
+                "name": "gulp-cli",
+                "test": "gulp --version"
+            },
+            {
+                "name": "grunt-cli",
+                "test": "grunt --version"
+            }
         ]
     },
     "serviceFabric": {
@@ -310,37 +365,76 @@
             "9.0"
         ],
         "tools": [
-            { "name": "nbgv", "test": "nbgv --version", "getversion": "nbgv --version" }
+            {
+                "name": "nbgv",
+                "test": "nbgv --version",
+                "getversion": "nbgv --version"
+            }
         ],
         "warmup": false
     },
     "choco": {
         "common_packages": [
-            { "name": "7zip.install" },
-            { "name": "aria2" },
-            { "name": "azcopy10" },
-            { "name": "Bicep" },
-            { "name": "innosetup" },
-            { "name": "jq" },
-            { "name": "NuGet.CommandLine" },
-            { "name": "packer" },
             {
-                "name": "strawberryperl" ,
-                "args": [ "--version", "5.32.1.1" ]
+                "name": "7zip.install"
             },
-            { "name": "pulumi" },
-            { "name": "swig" },
-            { "name": "vswhere" },
+            {
+                "name": "aria2"
+            },
+            {
+                "name": "azcopy10"
+            },
+            {
+                "name": "Bicep"
+            },
+            {
+                "name": "innosetup"
+            },
+            {
+                "name": "jq"
+            },
+            {
+                "name": "NuGet.CommandLine"
+            },
+            {
+                "name": "packer"
+            },
+            {
+                "name": "strawberryperl",
+                "args": [
+                    "--version",
+                    "5.32.1.1"
+                ]
+            },
+            {
+                "name": "pulumi"
+            },
+            {
+                "name": "swig"
+            },
+            {
+                "name": "vswhere"
+            },
             {
                 "name": "julia",
-                "args": [ "--ia", "/DIR=C:\\Julia" ]
+                "args": [
+                    "--ia",
+                    "/DIR=C:\\Julia"
+                ]
             },
             {
                 "name": "cmake.install",
-                "args": [ "--installargs", "ADD_CMAKE_TO_PATH=\"System\"" ]
+                "args": [
+                    "--installargs",
+                    "ADD_CMAKE_TO_PATH=\"System\""
+                ]
             },
-            { "name": "imagemagick" },
-            { "name": "ninja" }
+            {
+                "name": "imagemagick"
+            },
+            {
+                "name": "ninja"
+            }
         ]
     },
     "node": {

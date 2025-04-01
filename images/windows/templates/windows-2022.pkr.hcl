@@ -65,7 +65,7 @@ variable "imagedata_file" {
 
 variable "temp_dir" {
   type    = string
-  default = "D:\\temp"
+  default = "C:\\temp"
 }
 
 variable "install_password" {
@@ -232,33 +232,64 @@ variable "vm_name" {
   default = "windows_2022"
 }
 
-source "qemu" "win2022" {
-  accelerator      = "${var.accelerator}"
-  boot_wait        = "20s"
-  communicator     = "winrm"
-  cpus             = "${var.cpus}"
-  disk_compression = "true"
-  disk_interface   = "virtio"
-  disk_size        = "${var.disk_size}"
-  floppy_files     = ["./answer-files/2022-standard/autounattend.xml"]
-  format           = "qcow2"
-  headless         = "${var.headless}"
-  iso_checksum     = "${var.iso_checksum}"
-  iso_url          = "${var.iso_url}"
-  memory           = "${var.memory_size}"
-  net_device       = "virtio-net"
-  qemuargs         = [["-vga", "qxl"]]
-  shutdown_command = "${var.shutdown_command}"
-  winrm_insecure   = "true"
-  winrm_password   = "vagrant"
-  winrm_timeout    = "30m"
-  winrm_use_ssl    = "true"
-  winrm_username   = "vagrant"
-  output_directory = "output-${var.vm_name}"
+# source "qemu" "win2022" {
+#   accelerator      = "${var.accelerator}"
+#   boot_wait        = "20s"
+#   communicator     = "winrm"
+#   cpus             = "${var.cpus}"
+#   disk_compression = "true"
+#   disk_interface   = "virtio"
+#   disk_size        = "${var.disk_size}"
+#   floppy_files     = ["./answer-files/2022-standard/autounattend.xml"]
+#   format           = "qcow2"
+#   headless         = "${var.headless}"
+#   iso_checksum     = "${var.iso_checksum}"
+#   iso_url          = "${var.iso_url}"
+#   memory           = "${var.memory_size}"
+#   net_device       = "virtio-net"
+#   qemuargs         = [["-vga", "qxl"]]
+#   shutdown_command = "${var.shutdown_command}"
+#   winrm_insecure   = "true"
+#   winrm_password   = "vagrant"
+#   winrm_timeout    = "30m"
+#   winrm_use_ssl    = "true"
+#   winrm_username   = "vagrant"
+#   output_directory = "output-${var.vm_name}"
+# }
+
+variable "access_key" {
+  type = string
+}
+
+variable "secret_key" {
+  type = string
+}
+
+source "alicloud-ecs" "win2022" {
+      access_key = var.access_key
+      secret_key = var.secret_key
+      region = "cn-shanghai"
+      image_name = "action_runner_win2022_21H2_x64_dtc_zh-cn_40G_alibase_20250221.vhd"
+      source_image = "win2022_21H2_x64_dtc_zh-cn_40G_alibase_20250221.vhd"
+      instance_type = "ecs.sn1.xlarge"
+      io_optimized = true
+      internet_charge_type = "PayByTraffic"
+      image_force_delete = true
+      associate_public_ip_address = true
+      communicator = "winrm"
+      winrm_port = 5985
+      winrm_username = "Administrator"
+      winrm_password = "Sup3rS3cr3t!"
+      user_data_file = "winrm_enable_userdata.ps1"
+      run_tags  = {
+        "Built by"   = "Packer"
+        "Managed by" = "Packer"
+      }
 }
 
 build {
-  sources = ["source.qemu.win2022"]
+  sources = ["sources.alicloud-ecs.win2022"]
+  # sources = ["source.qemu.win2022"]
   # sources = ["source.azure-arm.image"]
 
   provisioner "powershell" {
@@ -533,5 +564,4 @@ build {
       "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10 } else { break } }"
     ]
   }
-
 }
