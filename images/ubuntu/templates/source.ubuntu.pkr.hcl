@@ -1,49 +1,40 @@
-source "azure-arm" "image" {
-  client_cert_path                       = var.client_cert_path
-  client_id                              = var.client_id
-  client_secret                          = var.client_secret
-  object_id                              = var.object_id
-  oidc_request_token                     = var.oidc_request_token
-  oidc_request_url                       = var.oidc_request_url
-  subscription_id                        = var.subscription_id
-  tenant_id                              = var.tenant_id
-  use_azure_cli_auth                     = var.use_azure_cli_auth
+source "qemu" "image" {
+  # Use cloud image URL directly from image_properties_map
+  iso_url = local.cloud_image_url != "" ? local.cloud_image_url : (
+    try(local.image_properties_map["ubuntu24"].cloud_image_url, "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img")
+  )
+  iso_checksum = local.cloud_image_checksum
+  disk_image = true
 
-  allowed_inbound_ip_addresses           = var.allowed_inbound_ip_addresses
-  build_resource_group_name              = var.build_resource_group_name
-  image_publisher                        = split(":", local.source_image_marketplace_sku)[0]
-  image_offer                            = split(":", local.source_image_marketplace_sku)[1]
-  image_sku                              = split(":", local.source_image_marketplace_sku)[2]
-  image_version                          = var.source_image_version
-  location                               = var.location
-  managed_image_name                     = var.managed_image_name
-  managed_image_resource_group_name      = var.managed_image_resource_group_name
-  managed_image_storage_account_type     = var.managed_image_storage_account_type
-  os_disk_size_gb                        = local.os_disk_size_gb
-  os_type                                = var.image_os_type
-  private_virtual_network_with_public_ip = var.private_virtual_network_with_public_ip
-  ssh_clear_authorized_keys              = var.ssh_clear_authorized_keys
-  temp_resource_group_name               = var.temp_resource_group_name
-  virtual_network_name                   = var.virtual_network_name
-  virtual_network_resource_group_name    = var.virtual_network_resource_group_name
-  virtual_network_subnet_name            = var.virtual_network_subnet_name
-  vm_size                                = var.vm_size
-  winrm_username                         = var.winrm_username
+  output_directory = var.output_directory
+  disk_size        = coalesce(var.disk_size, "${local.os_disk_size_gb}G")
+  format           = var.format
 
-  shared_image_gallery_destination {
-    subscription                         = var.subscription_id
-    gallery_name                         = var.gallery_name
-    resource_group                       = var.gallery_resource_group_name
-    image_name                           = var.gallery_image_name
-    image_version                        = var.gallery_image_version
-    storage_account_type                 = var.gallery_storage_account_type
-  }
+  cpus   = var.cpus
+  memory = var.memory
 
-  dynamic "azure_tag" {
-    for_each = var.azure_tags
-    content {
-      name  = azure_tag.key
-      value = azure_tag.value
-    }
-  }
+  net_device     = var.net_device
+  disk_interface = var.disk_interface
+  headless       = var.headless
+
+  ssh_username = "packer"
+  ssh_password = "packer"
+  ssh_timeout  = var.ssh_timeout
+  cd_files = ["./cidata/*"]
+  cd_label = "cidata"
+
+  # Cloud-init configuration for cloud images
+  # Note: Ubuntu cloud images typically have SSH enabled by default with user 'ubuntu'
+  # If custom user/password is needed, use cd_files to provide cloud-init config
+
+  # Cloud images boot faster as they don't need installation
+  boot_wait        = var.use_cloud_image ? "30s" : "5s"
+  shutdown_command = "sudo shutdown -P now"
+  vm_name          = var.image_os != "" ? "ubuntu-${var.image_os}" : "ubuntu"
+
+  qemuargs = [
+    ["-display", "none"],
+    ["-monitor", "none"],
+    ["-machine", "type=q35,accel=hvf:kvm:whpx:tcg:none"],
+  ]
 }

@@ -1,15 +1,36 @@
 build {
-  sources = ["source.azure-arm.image"]
-  name = "ubuntu-24_04"
+  sources = ["source.qemu.image"]
+  name    = "ubuntu-24_04"
 
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline          = ["mkdir ${var.image_folder}", "chmod 777 ${var.image_folder}"]
+    script          = "${path.root}/../scripts/build/resize-disk.sh"
+  }
+
+  # Create required directories before file upload (must use sudo for root-owned directories)
+  provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline = [
+      "sudo mkdir -p ${var.image_folder} ${var.helper_script_folder}",
+      "sudo chmod 777 ${var.image_folder} ${var.helper_script_folder}",
+      "ls -la ${var.image_folder} || echo 'Directory check failed'",
+      "ls -la ${var.helper_script_folder} || echo 'Helper directory check failed'"
+    ]
   }
 
   provisioner "file" {
-    destination = "${var.helper_script_folder}"
-    source      = "${path.root}/../scripts/helpers"
+    destination = "${var.helper_script_folder}/"
+    source      = "${path.root}/../scripts/helpers/"
+  }
+
+  # Verify files were uploaded successfully
+  provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline = [
+      "ls -la ${var.helper_script_folder} || echo 'Helper directory listing failed'",
+      "test -f ${var.helper_script_folder}/os.sh && echo 'os.sh exists' || echo 'os.sh NOT FOUND'",
+      "find ${var.helper_script_folder} -type f -name '*.sh' | head -5 || echo 'No .sh files found'"
+    ]
   }
 
   provisioner "shell" {
@@ -18,9 +39,9 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}","DEBIAN_FRONTEND=noninteractive"]
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "DEBIAN_FRONTEND=noninteractive"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    scripts          = [
+    scripts = [
       "${path.root}/../scripts/build/install-ms-repos.sh",
       "${path.root}/../scripts/build/configure-apt-sources.sh",
       "${path.root}/../scripts/build/configure-apt.sh"
@@ -39,7 +60,7 @@ build {
 
   provisioner "file" {
     destination = "${var.image_folder}"
-    sources     = [
+    sources = [
       "${path.root}/../assets/post-gen",
       "${path.root}/../scripts/tests",
       "${path.root}/../scripts/docs-gen"
@@ -58,7 +79,7 @@ build {
 
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline          = [
+    inline = [
       "mv ${var.image_folder}/docs-gen ${var.image_folder}/SoftwareReport",
       "mv ${var.image_folder}/post-gen ${var.image_folder}/post-generation"
     ]
@@ -82,7 +103,7 @@ build {
     scripts          = ["${path.root}/../scripts/build/install-apt-vital.sh"]
   }
 
-provisioner "shell" {
+  provisioner "shell" {
     environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     scripts          = ["${path.root}/../scripts/build/install-powershell.sh"]
@@ -94,10 +115,60 @@ provisioner "shell" {
     scripts          = ["${path.root}/../scripts/build/Install-PowerShellModules.ps1", "${path.root}/../scripts/build/Install-PowerShellAzModules.ps1"]
   }
 
+  # Ensure Android SDK command line tools file exists locally before upload
+  # File name is read from toolset.json to match install-android-sdk.sh
+  provisioner "shell-local" {
+    inline = [
+      "CACHE_DIR=\"${path.root}/cache\"",
+      "FILE_NAME=\"${local.android_cmdline_tools_file}\"",
+      "FILE_PATH=\"$CACHE_DIR/$FILE_NAME\"",
+      "URL=\"https://dl.google.com/android/repository/$FILE_NAME\"",
+      "",
+      "if [ ! -f \"$FILE_PATH\" ]; then",
+      "  echo 'Downloading Android SDK command line tools to cache...'",
+      "  mkdir -p \"$CACHE_DIR\"",
+      "  if command -v wget &> /dev/null; then",
+      "    wget \"$URL\" -O \"$FILE_PATH\"",
+      "  elif command -v curl &> /dev/null; then",
+      "    curl -L \"$URL\" -o \"$FILE_PATH\"",
+      "  else",
+      "    echo 'Error: wget or curl not found'",
+      "    exit 1",
+      "  fi",
+      "  echo 'Download completed: $FILE_PATH'",
+      "else",
+      "  echo 'Using existing cache file: $FILE_PATH'",
+      "fi"
+    ]
+  }
+
+  # Upload Android SDK command line tools from local cache directory
+  # Upload entire cache directory to avoid file existence check
+  provisioner "file" {
+    destination = "/tmp/"
+    source      = "${path.root}/cache/"
+  }
+
+  # Move file from cache subdirectory to /tmp/ and verify
+  provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline = [
+      "if [ -f /tmp/cache/${local.android_cmdline_tools_file} ]; then",
+      "  echo 'Moving Android SDK cache file from /tmp/cache/ to /tmp/';",
+      "  mv /tmp/cache/${local.android_cmdline_tools_file} /tmp/${local.android_cmdline_tools_file}",
+      "  rm -rf /tmp/cache",
+      "  echo 'Android SDK cache file ready at /tmp/${local.android_cmdline_tools_file}';",
+      "  ls -lh /tmp/${local.android_cmdline_tools_file};",
+      "else",
+      "  echo 'Warning: Android SDK cache file not found, script will download from remote';",
+      "fi"
+    ]
+  }
+
   provisioner "shell" {
     environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "DEBIAN_FRONTEND=noninteractive"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    scripts          = [
+    scripts = [
       "${path.root}/../scripts/build/install-actions-cache.sh",
       "${path.root}/../scripts/build/install-apt-common.sh",
       "${path.root}/../scripts/build/install-azcopy.sh",
@@ -229,7 +300,7 @@ provisioner "shell" {
 
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
-    inline          = ["sleep 30", "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"]
+    inline          = ["sleep 30", "if [ -f /usr/sbin/waagent ]; then /usr/sbin/waagent -force -deprovision+user; fi", "export HISTSIZE=0 && sync"]
   }
 
 }

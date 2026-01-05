@@ -1,134 +1,80 @@
-// Authentication related variables
-variable "client_cert_path" {
-  type    = string
-  default = "${env("ARM_CLIENT_CERT_PATH")}"
+// QEMU configuration variables
+variable "use_cloud_image" {
+  type        = bool
+  default     = true
+  description = "Use Ubuntu cloud image instead of ISO (recommended). Cloud images are pre-installed and boot faster."
 }
-variable "client_id" {
-  type    = string
-  default = "${env("ARM_CLIENT_ID")}"
+variable "cloud_image_url" {
+  type        = string
+  default     = ""
+  description = "URL to the cloud image (if empty, will use default based on image_os). Supported: ubuntu20, ubuntu22, ubuntu24"
 }
-variable "client_secret" {
-  type      = string
-  default   = "${env("ARM_CLIENT_SECRET")}"
-  sensitive = true
+variable "cloud_image_checksum" {
+  type        = string
+  default     = ""
+  description = "Checksum of the cloud image file (e.g., sha256:abc123...). Optional but recommended for verification."
 }
-variable "object_id" {
-  type    = string
-  default = "${env("ARM_OBJECT_ID")}"
+variable "iso_url" {
+  type        = string
+  default     = "${env("ISO_URL")}"
+  description = "URL to the ISO image to use for building the VM (if use_cloud_image is false)"
 }
-variable "oidc_request_token" {
-  type    = string
-  default = ""
+variable "iso_checksum" {
+  type        = string
+  default     = "${env("ISO_CHECKSUM")}"
+  description = "Checksum of the ISO file (e.g., sha256:abc123...)"
 }
-variable "oidc_request_url" {
-  type    = string
-  default = ""
+variable "iso_checksum_type" {
+  type        = string
+  default     = "sha256"
+  description = "Type of checksum (md5, sha1, sha256, sha512)"
 }
-variable "subscription_id" {
-  type    = string
-  default = "${env("ARM_SUBSCRIPTION_ID")}"
+variable "output_directory" {
+  type        = string
+  default     = "${env("OUTPUT_DIRECTORY")}"
+  description = "Directory to store the output image"
 }
-variable "tenant_id" {
-  type    = string
-  default = "${env("ARM_TENANT_ID")}"
+variable "disk_size" {
+  type        = string
+  default     = null
+  description = "Disk size (e.g., 75G). If null, will use value from locals based on image_os"
 }
-variable "use_azure_cli_auth" {
-  type    = bool
-  default = false
+variable "format" {
+  type        = string
+  default     = "qcow2"
+  description = "Output format for the disk image (qcow2, raw)"
+}
+variable "cpus" {
+  type        = number
+  default     = 4
+  description = "Number of CPU cores"
+}
+variable "memory" {
+  type        = number
+  default     = 8192
+  description = "Memory in MB"
+}
+variable "net_device" {
+  type        = string
+  default     = "virtio-net"
+  description = "Network device type (virtio-net, e1000, rtl8139)"
+}
+variable "disk_interface" {
+  type        = string
+  default     = "virtio"
+  description = "Disk interface type (virtio, ide, scsi)"
+}
+variable "headless" {
+  type        = bool
+  default     = true
+  description = "Run QEMU in headless mode"
 }
 
-// Azure environment related variables
-variable "allowed_inbound_ip_addresses" {
-  type    = list(string)
-  default = []
-}
-variable "azure_tags" {
-  type    = map(string)
-  default = {}
-}
-variable "build_resource_group_name" {
-  type    = string
-  default = "${env("BUILD_RG_NAME")}"
-}
-variable "gallery_image_name" {
-  type    = string
-  default = "${env("GALLERY_IMAGE_NAME")}"
-}
-variable "gallery_image_version" {
-  type    = string
-  default = "${env("GALLERY_IMAGE_VERSION")}"
-}
-variable "gallery_name" {
-  type    = string
-  default = "${env("GALLERY_NAME")}"
-}
-variable "gallery_resource_group_name" {
-  type    = string
-  default = "${env("GALLERY_RG_NAME")}"
-}
-variable "gallery_storage_account_type" {
-  type    = string
-  default = "${env("GALLERY_STORAGE_ACCOUNT_TYPE")}"
-}
-variable "image_os_type" {
-  type    = string
-  default = "Linux"
-}
-variable "location" {
-  type    = string
-  default = ""
-}
-variable "managed_image_name" {
-  type    = string
-  default = ""
-}
-variable "managed_image_resource_group_name" {
-  type    = string
-  default = "${env("ARM_RESOURCE_GROUP")}"
-}
-variable "managed_image_storage_account_type" {
-  type    = string
-  default = "Premium_LRS"
-}
-variable "private_virtual_network_with_public_ip" {
-  type    = bool
-  default = false
-}
-variable "os_disk_size_gb" {
-  type    = number
-  default = null
-}
-variable "source_image_version" {
-  type    = string
-  default = "latest"
-}
-variable "ssh_clear_authorized_keys" {
-  type    = bool
-  default = true
-}
-variable "temp_resource_group_name" {
-  type    = string
-  default = "${env("TEMP_RESOURCE_GROUP_NAME")}"
-}
-variable "virtual_network_name" {
-  type    = string
-  default = "${env("VNET_NAME")}"
-}
-variable "virtual_network_resource_group_name" {
-  type    = string
-  default = "${env("VNET_RESOURCE_GROUP")}"
-}
-variable "virtual_network_subnet_name" {
-  type    = string
-  default = "${env("VNET_SUBNET")}"
-}
-variable "vm_size" {
-  type    = string
-  default = "Standard_D4s_v4"
-}
-variable "winrm_username" {         // The username used to connect to the VM via WinRM
-    type    = string                // Also applies to the username used to create the VM
-    default = "packer"
+// SSH configuration
+variable "ssh_timeout" {
+  type        = string
+  default     = "10m"
+  description = "SSH connection timeout"
 }
 
 // Image related variables

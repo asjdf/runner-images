@@ -39,6 +39,16 @@ EOF
 # Uninstall unattended-upgrades
 apt-get purge unattended-upgrades
 
+# Clean up apt cache and temporary files to free up space before installing packages
+echo "Cleaning up apt cache and temporary files..."
+apt-get clean 2>/dev/null || true
+rm -rf /tmp/* 2>/dev/null || true
+rm -rf /var/tmp/* 2>/dev/null || true
+
+# Show available space
+AVAILABLE_SPACE=$(df -BG / | tail -1 | awk '{print $4}' | sed 's/G//')
+echo "Available disk space before apt update: ${AVAILABLE_SPACE}GB"
+
 echo 'APT sources'
 if ! is_ubuntu24; then
     cat /etc/apt/sources.list

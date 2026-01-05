@@ -44,35 +44,49 @@ set_etc_environment_variable "ANDROID_HOME" "${ANDROID_SDK_ROOT}"
 # Create android sdk directory
 mkdir -p ${ANDROID_SDK_ROOT}
 
-# Download the latest command line tools so that we can accept all of the licenses.
-# See https://developer.android.com/studio/#command-tools
+# Get command line tools package name from toolset
+# The file should be uploaded by packer from cache directory, or will be downloaded if not found
 cmdline_tools_package=$(get_toolset_value '.android."cmdline-tools"')
-if [[ $cmdline_tools_version == "latest" ]]; then
-    REPOSITORY_XML_URL="https://dl.google.com/android/repository/repository2-1.xml"
-    repository_xml_file=$(download_with_retry "$REPOSITORY_XML_URL")
-    cmdline_tools_package=$(
-        yq -p=xml \
-        '.sdk-repository.remotePackage[] | select(."+@path" == "cmdline-tools;latest" and .channelRef."+@ref" == "channel-0").archives.archive[].complete.url | select(contains("commandlinetools-linux"))' \
-        "${repository_xml_file}"
-    )
 
-    if [[ -z $cmdline_tools_package ]]; then
-        echo "Failed to parse latest command-line tools version"
-        exit 1
-    fi
+# Check if local file exists (uploaded by packer from cache directory)
+LOCAL_ARCHIVE_PATH="/tmp/${cmdline_tools_package}"
+if [[ -f "$LOCAL_ARCHIVE_PATH" ]]; then
+    echo "Using local command line tools archive: $LOCAL_ARCHIVE_PATH"
+    archive_path="$LOCAL_ARCHIVE_PATH"
+else
+    echo "Local archive not found, downloading from remote..."
+    # Download the command line tools using the package name from toolset
+    archive_path=$(download_with_retry "https://dl.google.com/android/repository/${cmdline_tools_package}")
 fi
 
-# Install command line tools
-archive_path=$(download_with_retry "https://dl.google.com/android/repository/${cmdline_tools_package}")
 unzip -qq "$archive_path" -d ${ANDROID_SDK_ROOT}/cmdline-tools
 # Command line tools need to be placed in ${ANDROID_SDK_ROOT}/sdk/cmdline-tools/latest to determine SDK root
 mv ${ANDROID_SDK_ROOT}/cmdline-tools/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest
 
+# Debug: Check directory structure and file permissions
+echo "Checking Android SDK installation..."
+echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}"
+echo "SDKMANAGER path: ${SDKMANAGER}"
+ls -la ${ANDROID_SDK_ROOT}/cmdline-tools/ || echo "cmdline-tools directory not found"
+ls -la ${ANDROID_SDK_ROOT}/cmdline-tools/latest/ || echo "latest directory not found"
+ls -la ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/ || echo "bin directory not found"
+test -f ${SDKMANAGER} && echo "sdkmanager file exists" || echo "sdkmanager file NOT found"
+test -x ${SDKMANAGER} && echo "sdkmanager is executable" || echo "sdkmanager is NOT executable"
+
+# Check Java availability (sdkmanager requires Java)
+if command -v java &> /dev/null; then
+    echo "Java found: $(java -version 2>&1 | head -n1)"
+else
+    echo "WARNING: Java not found, sdkmanager may not work"
+fi
+
 # Check sdk manager installation
-if ${SDKMANAGER} --list 1>/dev/null; then
+if ${SDKMANAGER} --list 1>/dev/null 2>&1; then
     echo "Android SDK manager was installed"
 else
     echo "Android SDK manager was not installed"
+    echo "Attempting to run sdkmanager with error output:"
+    ${SDKMANAGER} --list 2>&1 || true
     exit 1
 fi
 
@@ -113,8 +127,11 @@ add_filtered_installation_components $minimum_build_tool_version "${available_bu
 # Add platform tools to the list of components to install
 components+=("platform-tools")
 
+# Accept all licenses before installation to avoid interactive prompts
+yes | $SDKMANAGER --licenses > /dev/null 2>&1 || true
+
 # Install components
-echo "y" | $SDKMANAGER ${components[@]}
+yes | $SDKMANAGER ${components[@]}
 
 # Add required permissions
 chmod -R a+rwx ${ANDROID_SDK_ROOT}

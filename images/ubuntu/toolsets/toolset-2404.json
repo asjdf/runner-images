@@ -2,8 +2,8 @@
     "toolcache": [
         {
             "name": "Python",
-            "url" : "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
-            "platform" : "linux",
+            "url": "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
+            "platform": "linux",
             "platform_version": "24.04",
             "arch": "x64",
             "versions": [
@@ -18,7 +18,7 @@
         {
             "name": "PyPy",
             "arch": "x64",
-            "platform" : "linux",
+            "platform": "linux",
             "versions": [
                 "3.9",
                 "3.10",
@@ -27,8 +27,8 @@
         },
         {
             "name": "node",
-            "url" : "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
-            "platform" : "linux",
+            "url": "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
+            "platform": "linux",
             "arch": "x64",
             "versions": [
                 "20.*",
@@ -38,9 +38,9 @@
         },
         {
             "name": "go",
-            "url" : "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
+            "url": "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
             "arch": "x64",
-            "platform" : "linux",
+            "platform": "linux",
             "versions": [
                 "1.22.*",
                 "1.23.*",
@@ -61,7 +61,7 @@
         },
         {
             "name": "CodeQL",
-            "platform" : "linux",
+            "platform": "linux",
             "arch": "x64",
             "versions": [
                 "*"
@@ -70,7 +70,13 @@
     ],
     "java": {
         "default": "17",
-        "versions": [ "8", "11", "17", "21", "25"],
+        "versions": [
+            "8",
+            "11",
+            "17",
+            "21",
+            "25"
+        ],
         "maven": "3.9.12"
     },
     "android": {
@@ -82,8 +88,7 @@
             "google;m2repository",
             "google;google_play_services"
         ],
-        "addon_list": [
-        ],
+        "addon_list": [],
         "additional_tools": [
             "cmake;3.31.5",
             "cmake;4.1.2"
@@ -91,14 +96,23 @@
         "ndk": {
             "default": "27",
             "versions": [
-                "26", "27", "28", "29"
+                "26",
+                "27",
+                "28",
+                "29"
             ]
         }
     },
     "powershellModules": [
-        {"name": "Microsoft.Graph"},
-        {"name": "Pester"},
-        {"name": "PSScriptAnalyzer"}
+        {
+            "name": "Microsoft.Graph"
+        },
+        {
+            "name": "Pester"
+        },
+        {
+            "name": "PSScriptAnalyzer"
+        }
     ],
     "azureModules": [
         {
@@ -189,11 +203,9 @@
             "zip"
         ]
     },
-    "brew": [
-    ],
+    "brew": [],
     "docker": {
-        "images": [
-        ],
+        "images": [],
         "components": [
             {
                 "package": "containerd.io",
@@ -238,7 +250,11 @@
             "10.0"
         ],
         "tools": [
-            { "name": "nbgv", "test": "nbgv --version", "getversion" : "nbgv --version" }
+            {
+                "name": "nbgv",
+                "test": "nbgv --version",
+                "getversion": "nbgv --version"
+            }
         ]
     },
     "clang": {
@@ -269,7 +285,9 @@
         ]
     },
     "rubygems": [
-        {"name": "fastlane"}
+        {
+            "name": "fastlane"
+        }
     ],
     "selenium": {
         "version": "4"

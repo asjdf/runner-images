@@ -1,142 +1,143 @@
-// Authentication related variables
-variable "client_cert_path" {
+// Proxmox authentication related variables
+variable "proxmox_url" {
   type    = string
-  default = "${env("ARM_CLIENT_CERT_PATH")}"
+  default = "${env("PROXMOX_URL")}"
+  description = "Proxmox API URL (e.g., https://proxmox.example.com:8006/api2/json)"
 }
-variable "client_id" {
+variable "proxmox_username" {
   type    = string
-  default = "${env("ARM_CLIENT_ID")}"
+  default = "${env("PROXMOX_USERNAME")}"
+  description = "Proxmox username (e.g., root@pam)"
 }
-variable "client_secret" {
+variable "proxmox_password" {
   type      = string
-  default   = "${env("ARM_CLIENT_SECRET")}"
+  default   = "${env("PROXMOX_PASSWORD")}"
   sensitive = true
+  description = "Proxmox password"
 }
-variable "object_id" {
-  type    = string
-  default = "${env("ARM_OBJECT_ID")}"
-}
-variable "oidc_request_token" {
-  type    = string
-  default = ""
-}
-variable "oidc_request_url" {
-  type    = string
-  default = ""
-}
-variable "subscription_id" {
-  type    = string
-  default = "${env("ARM_SUBSCRIPTION_ID")}"
-}
-variable "tenant_id" {
-  type    = string
-  default = "${env("ARM_TENANT_ID")}"
-}
-variable "use_azure_cli_auth" {
+variable "proxmox_insecure_skip_tls_verify" {
   type    = bool
   default = false
+  description = "Skip TLS verification for Proxmox API"
+}
+variable "proxmox_node" {
+  type    = string
+  default = "${env("PROXMOX_NODE")}"
+  description = "Proxmox node name where VM will be created"
+}
+variable "proxmox_pool" {
+  type    = string
+  default = "${env("PROXMOX_POOL")}"
+  description = "Proxmox resource pool (optional)"
 }
 
-// Azure environment related variables
-variable "allowed_inbound_ip_addresses" {
-  type    = list(string)
-  default = []
-}
-variable "azure_tags" {
-  type    = map(string)
-  default = {}
-}
-variable "build_key_vault_name" {
+// VM configuration variables
+variable "vm_name" {
   type    = string
-  default = "${env("BUILD_KEY_VAULT_NAME")}"
+  default = "${env("VM_NAME")}"
+  description = "Name of the VM to create"
 }
-variable "build_key_vault_secret_name" {
-  type    = string
-  default = "${env("BUILD_KEY_VAULT_SECRET_NAME")}"
-}
-variable "build_resource_group_name" {
-  type    = string
-  default = "${env("BUILD_RG_NAME")}"
-}
-variable "gallery_image_name" {
-  type    = string
-  default = "${env("GALLERY_IMAGE_NAME")}"
-}
-variable "gallery_image_version" {
-  type    = string
-  default = "${env("GALLERY_IMAGE_VERSION")}"
-}
-variable "gallery_name" {
-  type    = string
-  default = "${env("GALLERY_NAME")}"
-}
-variable "gallery_resource_group_name" {
-  type    = string
-  default = "${env("GALLERY_RG_NAME")}"
-}
-variable "gallery_storage_account_type" {
-  type    = string
-  default = "${env("GALLERY_STORAGE_ACCOUNT_TYPE")}"
-}
-variable "image_os_type" {
-  type    = string
-  default = "Windows"
-}
-variable "location" {
-  type    = string
-  default = ""
-}
-variable "managed_image_name" {
-  type    = string
-  default = ""
-}
-variable "managed_image_resource_group_name" {
-  type    = string
-  default = "${env("ARM_RESOURCE_GROUP")}"
-}
-variable "managed_image_storage_account_type" {
-  type    = string
-  default = "Premium_LRS"
-}
-variable "private_virtual_network_with_public_ip" {
-  type    = bool
-  default = false
-}
-variable "os_disk_size_gb" {
+variable "vm_id" {
   type    = number
   default = null
+  description = "VM ID (auto-generated if not specified)"
 }
-variable "source_image_version" {
+variable "template_description" {
   type    = string
-  default = "latest"
+  default = "Built by Packer"
+  description = "Template description"
 }
-variable "temp_resource_group_name" {
+variable "vm_cores" {
+  type    = number
+  default = 4
+  description = "Number of CPU cores"
+}
+variable "vm_memory" {
+  type    = number
+  default = 8192
+  description = "Memory in MB"
+}
+variable "vm_disk_size" {
   type    = string
-  default = "${env("TEMP_RESOURCE_GROUP_NAME")}"
+  default = "100G"
+  description = "Disk size (e.g., 100G)"
 }
-variable "virtual_network_name" {
+variable "vm_disk_storage" {
   type    = string
-  default = "${env("VNET_NAME")}"
+  default = "${env("PROXMOX_DISK_STORAGE")}"
+  description = "Storage pool for disk"
 }
-variable "virtual_network_resource_group_name" {
+variable "vm_disk_type" {
   type    = string
-  default = "${env("VNET_RESOURCE_GROUP")}"
+  default = "scsi"
+  description = "Disk type (scsi, virtio, ide)"
 }
-variable "virtual_network_subnet_name" {
+variable "vm_network_bridge" {
   type    = string
-  default = "${env("VNET_SUBNET")}"
+  default = "vmbr0"
+  description = "Network bridge"
 }
-variable "vm_size" {
+variable "vm_network_model" {
   type    = string
-  default = "Standard_F8s_v2"
+  default = "virtio"
+  description = "Network adapter model (virtio, e1000, rtl8139)"
 }
-variable "winrm_expiration_time" {  // A time duration with which to set the WinRM certificate to expire
-  type    = string                  // Also applies to key vault secret expiration time
-  default = "1440h"
+
+// Clone configuration
+variable "clone_vm" {
+  type    = string
+  default = "${env("CLONE_VM")}"
+  description = "Name of the VM or template to clone from"
 }
-variable "winrm_username" {         // The username used to connect to the VM via WinRM
-    type    = string                // Also applies to the username used to create the VM
-    default = "packer"
+variable "clone_vm_id" {
+  type    = number
+  default = null
+  description = "ID of the VM or template to clone from (optional, will use clone_vm name if not set)"
+}
+variable "full_clone" {
+  type    = bool
+  default = true
+  description = "Create a full clone (true) or linked clone (false)"
+}
+
+// WinRM configuration
+variable "winrm_username" {
+  type    = string
+  default = "packer"
+  description = "WinRM username"
+}
+variable "winrm_password" {
+  type      = string
+  default   = "${env("WINRM_PASSWORD")}"
+  sensitive = true
+  description = "WinRM password"
+}
+variable "winrm_insecure" {
+  type    = bool
+  default = true
+  description = "Allow insecure WinRM connections"
+}
+variable "winrm_use_ssl" {
+  type    = bool
+  default = true
+  description = "Use SSL for WinRM"
+}
+variable "winrm_timeout" {
+  type    = string
+  default = "5m"
+  description = "WinRM connection timeout"
+}
+
+// Advanced VM options
+variable "qemu_agent" {
+  type    = bool
+  default = true
+  description = "Enable QEMU guest agent"
+}
+variable "scsi_controller" {
+  type    = string
+  default = "virtio-scsi-single"
+  description = "SCSI controller type"
 }
 
 // Image related variables

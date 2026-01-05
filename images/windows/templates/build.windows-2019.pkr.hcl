@@ -1,5 +1,14 @@
+packer {
+  required_plugins {
+    proxmox = {
+      version = ">= 1.1.0"
+      source  = "github.com/hashicorp/proxmox"
+    }
+  }
+}
+
 build {
-  sources = ["source.azure-arm.image"]
+  sources = ["source.proxmox-clone.image"]
   name = "windows-2019"
 
   provisioner "powershell" {
