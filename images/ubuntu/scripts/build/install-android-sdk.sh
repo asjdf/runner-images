@@ -128,10 +128,10 @@ add_filtered_installation_components $minimum_build_tool_version "${available_bu
 components+=("platform-tools")
 
 # Accept all licenses before installation to avoid interactive prompts
-yes | $SDKMANAGER --licenses > /dev/null 2>&1 || true
+# yes | $SDKMANAGER --licenses > /dev/null 2>&1 || true
 
 # Install components
-yes | $SDKMANAGER ${components[@]}
+echo "y" | $SDKMANAGER ${components[@]}
 
 # Add required permissions
 chmod -R a+rwx ${ANDROID_SDK_ROOT}
