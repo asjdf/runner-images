@@ -36,6 +36,5 @@ source "qemu" "image" {
     ["-display", "none"],
     ["-monitor", "none"],
     ["-machine", "type=q35,accel=hvf:kvm:whpx:tcg:none"],
-    ["-cpu", "host"]
   ]
 }
