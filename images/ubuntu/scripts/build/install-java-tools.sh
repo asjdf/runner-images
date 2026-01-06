@@ -115,5 +115,7 @@ rm -f /etc/apt/sources.list.d/zulu.list
 rm -f /usr/share/keyrings/adoptium.gpg
 rm -f /usr/share/keyrings/zulu.gpg
 
+echo "export JAVA_OPTS=\"-Xint $JAVA_OPTS\"" >> /etc/environment
+
 reload_etc_environment
 invoke_tests "Java"
